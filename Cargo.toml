@@ -1,0 +1,20 @@
+[package]
+name = "random-manager"
+version = "0.0.1" # https://crates.io/crates/random-manager
+edition = "2021"
+rust-version = "1.62"
+publish = true
+description = "Rust random manager"
+repository = "https://github.com/gyuho/random-manager"
+readme = "README.md"
+license = "Apache-2.0"
+
+[dependencies]
+bs58 = "0.4.0"
+lazy_static = "1.4.0"
+rand = "0.8.5"
+ring = "0.16.20"
+
+[dev-dependencies]
+env_logger = "0.9.0"
+log = "0.4.17"

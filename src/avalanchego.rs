@@ -1,6 +1,8 @@
 use std::{
-    env, fmt, fs,
+    env, fmt,
+    fs::{self, File},
     io::{self, Error, ErrorKind},
+    os::unix::fs::PermissionsExt,
     path::Path,
 };
 
@@ -184,8 +186,27 @@ pub async fn download(arch: Option<Arch>, os: Option<Os>) -> io::Result<(String,
         }
     };
 
+    {
+        let f = File::open(&avalanchego_path)?;
+        f.set_permissions(PermissionsExt::from_mode(0o777))?;
+    }
     Ok((
         String::from(avalanchego_path.as_os_str().to_str().unwrap()),
         String::from(plugins_dir.as_os_str().to_str().unwrap()),
     ))
+}
+
+///  build
+///    ├── avalanchego (the binary from compiling the app directory)
+///    └── plugins
+///        └── evm
+pub fn get_plugins_dir<P: AsRef<Path>>(avalanche_bin: P) -> String {
+    let parent_dir = avalanche_bin.as_ref().parent().unwrap();
+    String::from(
+        parent_dir
+            .join(Path::new("plugins"))
+            .as_path()
+            .to_str()
+            .unwrap(),
+    )
 }

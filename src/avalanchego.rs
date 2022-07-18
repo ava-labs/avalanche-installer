@@ -165,8 +165,16 @@ pub async fn download(arch: Option<Arch>, os: Option<Os>) -> io::Result<(String,
     log::info!("unpacking {} to {}", tmp_file_path, dst_dir_path);
     compress_manager::unpack_directory(&tmp_file_path, &dst_dir_path, dir_decoder.clone())?;
 
-    log::info!("cleaning up downloaded files");
-    fs::remove_file(&tmp_file_path)?;
+    // TODO: this can fail due to files being still busy...
+    log::info!("cleaning up downloaded file {}", tmp_file_path);
+    match fs::remove_file(&tmp_file_path) {
+        Ok(_) => log::info!("removed downloaded file {}", tmp_file_path),
+        Err(e) => log::warn!(
+            "failed to remove downloaded file {} ({}), skipping for now...",
+            tmp_file_path,
+            e
+        ),
+    }
 
     let (avalanchego_path, plugins_dir) = {
         if dir_decoder.clone().suffix() == DirDecoder::Zip.suffix() {

@@ -13,7 +13,7 @@ fn main() {
         };
     }
 
-    let (avalanchego_path, plugins_dir) = ab!(avalanchego::download(None, None)).unwrap();
+    let (avalanchego_path, plugins_dir) = ab!(avalanchego::download_latest(None, None)).unwrap();
     log::info!("avalanchego path: {}", avalanchego_path);
     log::info!("plugins path: {}", plugins_dir);
 }

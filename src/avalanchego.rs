@@ -75,18 +75,39 @@ impl Os {
     }
 }
 
+/// Downloads the latest "avalanchego" from the github release page.
+pub async fn download_latest(arch: Option<Arch>, os: Option<Os>) -> io::Result<(String, String)> {
+    download(arch, os, None).await
+}
+
 /// Downloads the official "avalanchego" binaries from the GitHub release page.
 /// Returns the path to the binary path and "plugins" directory.
+///
+/// Leave "release_tag" none to download the latest.
+///
 /// Leave "arch" and "os" empty to auto-detect from its local system.
 /// "arch" must be either "amd64" or "arm64".
 /// "os" must be either "macos", "linux", or "win".
 /// ref. https://github.com/ava-labs/avalanchego/releases
-pub async fn download(arch: Option<Arch>, os: Option<Os>) -> io::Result<(String, String)> {
-    log::info!("fetching the latest git tags");
-    let release_info = crate::fetch_latest_release("ava-labs", "avalanchego").await?;
+pub async fn download(
+    arch: Option<Arch>,
+    os: Option<Os>,
+    release_tag: Option<String>,
+) -> io::Result<(String, String)> {
+    // e.g., "v1.7.16"
+    let tag_name = if let Some(v) = release_tag {
+        v
+    } else {
+        log::info!("fetching the latest git tags");
+        let release_info = crate::fetch_latest_release("ava-labs", "avalanchego").await?;
+        release_info.tag_name
+    };
 
     // ref. https://github.com/ava-labs/avalanchego/releases
-    log::info!("detecting arch and platform");
+    log::info!(
+        "detecting arch and platform for the release tag {}",
+        tag_name
+    );
     let arch = {
         if arch.is_none() {
             match env::consts::ARCH {
@@ -106,20 +127,17 @@ pub async fn download(arch: Option<Arch>, os: Option<Os>) -> io::Result<(String,
         if os.is_none() {
             if cfg!(target_os = "macos") {
                 (
-                    format!("avalanchego-macos-{}.zip", release_info.tag_name),
+                    format!("avalanchego-macos-{}.zip", tag_name),
                     DirDecoder::Zip,
                 )
             } else if cfg!(unix) {
                 (
-                    format!(
-                        "avalanchego-linux-{}-{}.tar.gz",
-                        arch, release_info.tag_name
-                    ),
+                    format!("avalanchego-linux-{}-{}.tar.gz", arch, tag_name),
                     DirDecoder::TarGzip,
                 )
             } else if cfg!(windows) {
                 (
-                    format!("avalanchego-win-{}-experimental.zip", release_info.tag_name),
+                    format!("avalanchego-win-{}-experimental.zip", tag_name),
                     DirDecoder::Zip,
                 )
             } else {
@@ -129,18 +147,15 @@ pub async fn download(arch: Option<Arch>, os: Option<Os>) -> io::Result<(String,
             let os = os.unwrap();
             match os {
                 Os::MacOs => (
-                    format!("avalanchego-macos-{}.zip", release_info.tag_name),
+                    format!("avalanchego-macos-{}.zip", tag_name),
                     DirDecoder::Zip,
                 ),
                 Os::Linux => (
-                    format!(
-                        "avalanchego-linux-{}-{}.tar.gz",
-                        arch, release_info.tag_name
-                    ),
+                    format!("avalanchego-linux-{}-{}.tar.gz", arch, tag_name),
                     DirDecoder::TarGzip,
                 ),
                 Os::Windows => (
-                    format!("avalanchego-win-{}-experimental.zip", release_info.tag_name),
+                    format!("avalanchego-win-{}-experimental.zip", tag_name),
                     DirDecoder::Zip,
                 ),
             }
@@ -156,7 +171,7 @@ pub async fn download(arch: Option<Arch>, os: Option<Os>) -> io::Result<(String,
     log::info!("downloading latest avalanchego '{}'", file_name);
     let download_url = format!(
         "https://github.com/ava-labs/avalanchego/releases/download/{}/{}",
-        release_info.tag_name, file_name
+        tag_name, file_name
     );
     let tmp_file_path = random_manager::tmp_path(10, Some(dir_decoder.suffix()))?;
     http_manager::download_file(&download_url, &tmp_file_path).await?;
@@ -185,10 +200,10 @@ pub async fn download(arch: Option<Arch>, os: Option<Os>) -> io::Result<(String,
         } else {
             (
                 Path::new(&dst_dir_path)
-                    .join(format!("avalanchego-{}", release_info.tag_name))
+                    .join(format!("avalanchego-{}", tag_name))
                     .join("avalanchego"),
                 Path::new(&dst_dir_path)
-                    .join(format!("avalanchego-{}", release_info.tag_name))
+                    .join(format!("avalanchego-{}", tag_name))
                     .join("plugins"),
             )
         }

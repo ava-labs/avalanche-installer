@@ -32,6 +32,8 @@ pub async fn fetch_latest_release(org: &str, repo: &str) -> io::Result<GithubRes
 pub struct GithubResponse {
     pub tag_name: String,
     pub assets: Vec<GithubAsset>,
+    #[serde(default)]
+    pub prerelease: bool,
 }
 
 /// ref. https://api.github.com/repos/ava-labs/avalanchego/releases/latest

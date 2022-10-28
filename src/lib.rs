@@ -31,7 +31,9 @@ pub async fn fetch_latest_release(org: &str, repo: &str) -> io::Result<GithubRes
 #[serde(rename_all = "snake_case")]
 pub struct GithubResponse {
     pub tag_name: String,
+
     pub assets: Vec<GithubAsset>,
+
     #[serde(default)]
     pub prerelease: bool,
 }

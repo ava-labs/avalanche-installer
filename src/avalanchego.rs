@@ -7,6 +7,7 @@ use std::{
 };
 
 use compress_manager::DirDecoder;
+use tokio::time::{sleep, Duration};
 
 /// Represents the AvalancheGo release "arch".
 #[derive(Eq, PartialEq, Clone)]
@@ -80,7 +81,7 @@ pub async fn download_latest(arch: Option<Arch>, os: Option<Os>) -> io::Result<(
     download(arch, os, None).await
 }
 
-pub const DEFAULT_TAG_NAME: &str = "v1.8.6";
+pub const DEFAULT_TAG_NAME: &str = "v1.9.5";
 
 /// Downloads the official "avalanchego" binaries from the GitHub release page.
 /// Returns the path to the binary path and "plugins" directory.
@@ -96,21 +97,40 @@ pub async fn download(
     os: Option<Os>,
     release_tag: Option<String>,
 ) -> io::Result<(String, String)> {
-    // e.g., "v1.8.6"
+    // e.g., "v1.9.5"
     let tag_name = if let Some(v) = release_tag {
         v
     } else {
         log::info!("fetching the latest git tags");
-        let release_info = crate::fetch_latest_release("ava-labs", "avalanchego").await?;
+        let mut release_info = crate::GithubResponse::default();
+        for i in 0..10 {
+            let info = crate::fetch_latest_release("ava-labs", "avalanchego").await?;
+
+            release_info = info;
+            if release_info.tag_name.is_some() {
+                break;
+            }
+
+            log::warn!("release_info.tag_name is None -- retrying {}...", i + 1);
+            sleep(Duration::from_secs(i * 5)).await;
+        }
+
+        if release_info.tag_name.is_none() {
+            return Err(Error::new(
+                ErrorKind::Other,
+                "release_info.tag_name not found",
+            ));
+        }
+
         if release_info.prerelease {
             log::warn!(
                 "latest release '{}' is prerelease, falling back to default tag name '{}'",
-                release_info.tag_name,
+                release_info.tag_name.unwrap(),
                 DEFAULT_TAG_NAME
             );
             DEFAULT_TAG_NAME.to_string()
         } else {
-            release_info.tag_name
+            release_info.tag_name.unwrap()
         }
     };
 

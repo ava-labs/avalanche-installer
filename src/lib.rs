@@ -30,12 +30,29 @@ pub async fn fetch_latest_release(org: &str, repo: &str) -> io::Result<GithubRes
 #[derive(Debug, Serialize, Deserialize, Eq, PartialEq, Clone)]
 #[serde(rename_all = "snake_case")]
 pub struct GithubResponse {
-    pub tag_name: String,
+    /// Sometimes empty for github API consistency issue.
+    pub tag_name: Option<String>,
 
     pub assets: Vec<GithubAsset>,
 
     #[serde(default)]
     pub prerelease: bool,
+}
+
+impl Default for GithubResponse {
+    fn default() -> Self {
+        Self::default()
+    }
+}
+
+impl GithubResponse {
+    pub fn default() -> Self {
+        Self {
+            tag_name: None,
+            assets: Vec::new(),
+            prerelease: false,
+        }
+    }
 }
 
 /// ref. https://api.github.com/repos/ava-labs/avalanchego/releases/latest

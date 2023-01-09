@@ -32,8 +32,8 @@ pub async fn fetch_latest_release(org: &str, repo: &str) -> io::Result<GithubRes
 pub struct GithubResponse {
     /// Sometimes empty for github API consistency issue.
     pub tag_name: Option<String>,
-
-    pub assets: Vec<GithubAsset>,
+    /// Sometimes empty for github API consistency issue.
+    pub assets: Option<Vec<GithubAsset>>,
 
     #[serde(default)]
     pub prerelease: bool,
@@ -49,7 +49,7 @@ impl GithubResponse {
     pub fn default() -> Self {
         Self {
             tag_name: None,
-            assets: Vec::new(),
+            assets: None,
             prerelease: false,
         }
     }

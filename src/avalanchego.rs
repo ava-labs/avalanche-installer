@@ -254,7 +254,7 @@ pub async fn download(
 ///    ├── avalanchego (the binary from compiling the app directory)
 ///    └── plugins
 ///        └── evm
-pub fn get_plugins_dir<P: AsRef<Path>>(avalanche_bin: P) -> String {
+pub fn get_plugin_dir<P: AsRef<Path>>(avalanche_bin: P) -> String {
     let parent_dir = avalanche_bin.as_ref().parent().unwrap();
     String::from(
         parent_dir

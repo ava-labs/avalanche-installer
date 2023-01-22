@@ -81,7 +81,7 @@ pub async fn download_latest(arch: Option<Arch>, os: Option<Os>) -> io::Result<(
     download(arch, os, None).await
 }
 
-pub const DEFAULT_TAG_NAME: &str = "v1.9.5";
+pub const DEFAULT_TAG_NAME: &str = "v1.9.7";
 
 /// Downloads the official "avalanchego" binaries from the GitHub release page.
 /// Returns the path to the binary path and "plugins" directory.
@@ -97,14 +97,14 @@ pub async fn download(
     os: Option<Os>,
     release_tag: Option<String>,
 ) -> io::Result<(String, String)> {
-    // e.g., "v1.9.5"
+    // e.g., "v1.9.7"
     let tag_name = if let Some(v) = release_tag {
         v
     } else {
         log::info!("fetching the latest git tags");
-        let mut release_info = crate::GithubResponse::default();
-        for i in 0..10 {
-            let info = crate::fetch_latest_release("ava-labs", "avalanchego").await?;
+        let mut release_info = crate::github::ReleaseResponse::default();
+        for i in 0..20 {
+            let info = crate::github::fetch_latest_release("ava-labs", "avalanchego").await?;
 
             release_info = info;
             if release_info.tag_name.is_some() {
@@ -136,7 +136,7 @@ pub async fn download(
 
     // ref. https://github.com/ava-labs/avalanchego/releases
     log::info!(
-        "detecting arch and platform for the release tag {}",
+        "detecting arch and platform for the release version tag {}",
         tag_name
     );
     let arch = {

@@ -77,14 +77,14 @@ impl Os {
 }
 
 /// Downloads the latest "avalanchego" from the github release page.
-pub async fn download_latest(arch: Option<Arch>, os: Option<Os>) -> io::Result<(String, String)> {
+pub async fn download_latest(arch: Option<Arch>, os: Option<Os>) -> io::Result<String> {
     download(arch, os, None).await
 }
 
 pub const DEFAULT_TAG_NAME: &str = "v1.9.7";
 
 /// Downloads the official "avalanchego" binaries from the GitHub release page.
-/// Returns the path to the binary path and "plugins" directory.
+/// Returns the path to the binary path.
 ///
 /// Leave "release_tag" none to download the latest.
 ///
@@ -96,14 +96,14 @@ pub async fn download(
     arch: Option<Arch>,
     os: Option<Os>,
     release_tag: Option<String>,
-) -> io::Result<(String, String)> {
+) -> io::Result<String> {
     // e.g., "v1.9.7"
     let tag_name = if let Some(v) = release_tag {
         v
     } else {
         log::info!("fetching the latest git tags");
         let mut release_info = crate::github::ReleaseResponse::default();
-        for i in 0..20 {
+        for round in 0..20 {
             let info = crate::github::fetch_latest_release("ava-labs", "avalanchego").await?;
 
             release_info = info;
@@ -111,8 +111,8 @@ pub async fn download(
                 break;
             }
 
-            log::warn!("release_info.tag_name is None -- retrying {}...", i + 1);
-            sleep(Duration::from_secs(i * 5)).await;
+            log::warn!("release_info.tag_name is None -- retrying {}...", round + 1);
+            sleep(Duration::from_secs((round + 1) * 5)).await;
         }
 
         if release_info.tag_name.is_none() {
@@ -222,32 +222,19 @@ pub async fn download(
         ),
     }
 
-    let (avalanchego_path, plugins_dir) = {
-        if dir_decoder.clone().suffix() == DirDecoder::Zip.suffix() {
-            (
-                Path::new(&dst_dir_path).join("build").join("avalanchego"),
-                Path::new(&dst_dir_path).join("build").join("plugins"),
-            )
-        } else {
-            (
-                Path::new(&dst_dir_path)
-                    .join(format!("avalanchego-{}", tag_name))
-                    .join("avalanchego"),
-                Path::new(&dst_dir_path)
-                    .join(format!("avalanchego-{}", tag_name))
-                    .join("plugins"),
-            )
-        }
+    let avalanchego_path = if dir_decoder.clone().suffix() == DirDecoder::Zip.suffix() {
+        Path::new(&dst_dir_path).join("build").join("avalanchego")
+    } else {
+        Path::new(&dst_dir_path)
+            .join(format!("avalanchego-{}", tag_name))
+            .join("avalanchego")
     };
 
     {
         let f = File::open(&avalanchego_path)?;
         f.set_permissions(PermissionsExt::from_mode(0o777))?;
     }
-    Ok((
-        String::from(avalanchego_path.as_os_str().to_str().unwrap()),
-        String::from(plugins_dir.as_os_str().to_str().unwrap()),
-    ))
+    Ok(String::from(avalanchego_path.as_os_str().to_str().unwrap()))
 }
 
 ///  build

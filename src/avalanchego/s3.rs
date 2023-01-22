@@ -116,6 +116,13 @@ pub async fn download_avalanche_and_plugins(
         "listed {} plugin objects in {source_plugin_dir_s3_prefix}",
         objects.len()
     );
+    if !Path::new(target_plugin_dir).exists() {
+        log::info!("creating '{target_plugin_dir}' for plugin");
+        fs::create_dir_all(target_plugin_dir.clone())?;
+    } else {
+        log::info!("plugin-dir {target_plugin_dir} already exists -- skipping create_dir_all");
+    }
+
     for obj in objects.iter() {
         let s3_key = obj.key().expect("unexpected None s3 object").to_string();
         let s3_file_name = extract_filename(&s3_key);

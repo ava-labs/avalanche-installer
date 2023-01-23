@@ -2,18 +2,6 @@ use std::io::{self, Error, ErrorKind};
 
 use serde::{Deserialize, Serialize};
 
-/// # Examples
-///
-/// To download with bash:
-///
-/// ```
-/// VERSION=1.9.7
-/// rm -rf /tmp/avalanchego.tar.gz /tmp/avalanchego-v${VERSION}
-/// curl -L ${DOWNLOAD_URL}/v${VERSION}/avalanchego-linux-amd64-v${VERSION}.tar.gz -o /tmp/avalanchego.tar.gz
-/// tar xzvf /tmp/avalanchego.tar.gz -C /tmp
-/// find /tmp/avalanchego-v${VERSION}
-/// ```
-///
 /// ref. https://github.com/ava-labs/avalanchego/releases
 /// ref. https://api.github.com/repos/ava-labs/avalanchego/releases/latest
 pub async fn fetch_latest_release(org: &str, repo: &str) -> io::Result<ReleaseResponse> {

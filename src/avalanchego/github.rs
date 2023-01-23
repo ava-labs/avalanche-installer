@@ -104,7 +104,18 @@ pub async fn download(
         log::info!("fetching the latest git tags");
         let mut release_info = crate::github::ReleaseResponse::default();
         for round in 0..20 {
-            let info = crate::github::fetch_latest_release("ava-labs", "avalanchego").await?;
+            let info = match crate::github::fetch_latest_release("ava-labs", "avalanchego").await {
+                Ok(v) => v,
+                Err(e) => {
+                    log::warn!(
+                        "failed fetch_latest_release {} -- retrying {}...",
+                        e,
+                        round + 1
+                    );
+                    sleep(Duration::from_secs((round + 1) * 5)).await;
+                    continue;
+                }
+            };
 
             release_info = info;
             if release_info.tag_name.is_some() {
@@ -116,10 +127,8 @@ pub async fn download(
         }
 
         if release_info.tag_name.is_none() {
-            return Err(Error::new(
-                ErrorKind::Other,
-                "release_info.tag_name not found",
-            ));
+            log::warn!("release_info.tag_name not found -- defaults to {DEFAULT_TAG_NAME}");
+            release_info.tag_name = Some(DEFAULT_TAG_NAME.to_string());
         }
 
         if release_info.prerelease {

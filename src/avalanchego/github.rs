@@ -9,73 +9,6 @@ use std::{
 use compress_manager::DirDecoder;
 use tokio::time::{sleep, Duration};
 
-/// Represents the AvalancheGo release "arch".
-#[derive(Eq, PartialEq, Clone)]
-pub enum Arch {
-    Amd64,
-    Arm64,
-}
-
-/// ref. https://doc.rust-lang.org/std/string/trait.ToString.html
-/// ref. https://doc.rust-lang.org/std/fmt/trait.Display.html
-/// Use "Self.to_string()" to directly invoke this
-impl fmt::Display for Arch {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Arch::Amd64 => write!(f, "amd64"),
-            Arch::Arm64 => write!(f, "arm64"),
-        }
-    }
-}
-
-impl Arch {
-    pub fn new(arch: &str) -> io::Result<Self> {
-        match arch {
-            "amd64" => Ok(Arch::Amd64),
-            "arm64" => Ok(Arch::Arm64),
-            _ => Err(Error::new(
-                ErrorKind::InvalidInput,
-                format!("unknown arch {}", arch),
-            )),
-        }
-    }
-}
-
-/// Represents the AvalancheGo release "os".
-#[derive(Eq, PartialEq, Clone)]
-pub enum Os {
-    MacOs,
-    Linux,
-    Windows,
-}
-
-/// ref. https://doc.rust-lang.org/std/string/trait.ToString.html
-/// ref. https://doc.rust-lang.org/std/fmt/trait.Display.html
-/// Use "Self.to_string()" to directly invoke this
-impl fmt::Display for Os {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Os::MacOs => write!(f, "macos"),
-            Os::Linux => write!(f, "linux"),
-            Os::Windows => write!(f, "win"),
-        }
-    }
-}
-
-impl Os {
-    pub fn new(os: &str) -> io::Result<Self> {
-        match os {
-            "macos" => Ok(Os::MacOs),
-            "linux" => Ok(Os::Linux),
-            "win" => Ok(Os::Windows),
-            _ => Err(Error::new(
-                ErrorKind::InvalidInput,
-                format!("unknown os {}", os),
-            )),
-        }
-    }
-}
-
 /// Downloads the latest "avalanchego" from the github release page.
 pub async fn download_latest(arch: Option<Arch>, os: Option<Os>) -> io::Result<String> {
     download(arch, os, None).await
@@ -244,4 +177,71 @@ pub async fn download(
         f.set_permissions(PermissionsExt::from_mode(0o777))?;
     }
     Ok(String::from(avalanchego_path.as_os_str().to_str().unwrap()))
+}
+
+/// Represents the AvalancheGo release "arch".
+#[derive(Eq, PartialEq, Clone)]
+pub enum Arch {
+    Amd64,
+    Arm64,
+}
+
+/// ref. https://doc.rust-lang.org/std/string/trait.ToString.html
+/// ref. https://doc.rust-lang.org/std/fmt/trait.Display.html
+/// Use "Self.to_string()" to directly invoke this
+impl fmt::Display for Arch {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Arch::Amd64 => write!(f, "amd64"),
+            Arch::Arm64 => write!(f, "arm64"),
+        }
+    }
+}
+
+impl Arch {
+    pub fn new(arch: &str) -> io::Result<Self> {
+        match arch {
+            "amd64" => Ok(Arch::Amd64),
+            "arm64" => Ok(Arch::Arm64),
+            _ => Err(Error::new(
+                ErrorKind::InvalidInput,
+                format!("unknown arch {}", arch),
+            )),
+        }
+    }
+}
+
+/// Represents the AvalancheGo release "os".
+#[derive(Eq, PartialEq, Clone)]
+pub enum Os {
+    MacOs,
+    Linux,
+    Windows,
+}
+
+/// ref. https://doc.rust-lang.org/std/string/trait.ToString.html
+/// ref. https://doc.rust-lang.org/std/fmt/trait.Display.html
+/// Use "Self.to_string()" to directly invoke this
+impl fmt::Display for Os {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Os::MacOs => write!(f, "macos"),
+            Os::Linux => write!(f, "linux"),
+            Os::Windows => write!(f, "win"),
+        }
+    }
+}
+
+impl Os {
+    pub fn new(os: &str) -> io::Result<Self> {
+        match os {
+            "macos" => Ok(Os::MacOs),
+            "linux" => Ok(Os::Linux),
+            "win" => Ok(Os::Windows),
+            _ => Err(Error::new(
+                ErrorKind::InvalidInput,
+                format!("unknown os {}", os),
+            )),
+        }
+    }
 }

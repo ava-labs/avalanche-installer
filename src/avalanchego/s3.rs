@@ -65,13 +65,12 @@ pub async fn download_avalanche_and_plugins(
         }
 
         log::info!("successfully downloaded to {tmp_path}");
-        fs::copy(&tmp_path, &target_avalanchego_bin_path)?;
-        fs::remove_file(&tmp_path)?;
-
         {
-            let f = File::open(&target_avalanchego_bin_path)?;
+            let f = File::open(&tmp_path)?;
             f.set_permissions(PermissionsExt::from_mode(0o777))?;
         }
+        fs::copy(&tmp_path, &target_avalanchego_bin_path)?;
+        fs::remove_file(&tmp_path)?;
     } else {
         log::info!("skipping avalanchego downloads")
     }
@@ -184,13 +183,12 @@ pub async fn download_avalanche_and_plugins(
         }
 
         log::info!("successfully downloaded to {tmp_path}");
-        fs::copy(&tmp_path, &target_plugin_bin_file_path)?;
-        fs::remove_file(&tmp_path)?;
-
         {
-            let f = File::open(&target_plugin_bin_file_path)?;
+            let f = File::open(&tmp_path)?;
             f.set_permissions(PermissionsExt::from_mode(0o777))?;
         }
+        fs::copy(&tmp_path, &target_plugin_bin_file_path)?;
+        fs::remove_file(&tmp_path)?;
     }
 
     Ok(())

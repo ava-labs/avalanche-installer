@@ -10,8 +10,12 @@ use compress_manager::DirDecoder;
 use tokio::time::{sleep, Duration};
 
 /// Downloads the latest "subnet-evm" from the github release page.
-pub async fn download_latest(arch: Option<Arch>, os: Option<Os>) -> io::Result<String> {
-    download(arch, os, None).await
+pub async fn download_latest(
+    arch: Option<Arch>,
+    os: Option<Os>,
+    target_file_path: &str,
+) -> io::Result<()> {
+    download(arch, os, None, target_file_path).await
 }
 
 pub const DEFAULT_TAG_NAME: &str = "v0.4.8";
@@ -21,7 +25,8 @@ pub async fn download(
     arch: Option<Arch>,
     os: Option<Os>,
     release_tag: Option<String>,
-) -> io::Result<String> {
+    target_file_path: &str,
+) -> io::Result<()> {
     // e.g., "v0.4.8"
     let tag_name = if let Some(v) = release_tag {
         v
@@ -164,7 +169,14 @@ pub async fn download(
         let f = File::open(&subnet_evm_path)?;
         f.set_permissions(PermissionsExt::from_mode(0o777))?;
     }
-    Ok(String::from(subnet_evm_path.as_os_str().to_str().unwrap()))
+    log::info!(
+        "copying {} to {target_file_path}",
+        subnet_evm_path.display()
+    );
+    fs::copy(&subnet_evm_path, &target_file_path)?;
+    fs::remove_file(&subnet_evm_path)?;
+
+    Ok(())
 }
 
 /// Represents the subnet-evm release "arch".

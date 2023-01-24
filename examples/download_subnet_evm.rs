@@ -12,7 +12,10 @@ async fn main() -> io::Result<()> {
         env_logger::Env::default().filter_or(env_logger::DEFAULT_FILTER_ENV, "info"),
     );
 
-    let subnet_evm_path = github::download_latest(None, None).await.unwrap();
+    let subnet_evm_path = random_manager::tmp_path(10, None).unwrap();
+    github::download_latest(None, None, &subnet_evm_path)
+        .await
+        .unwrap();
     log::info!("subnet_evm path: {}", subnet_evm_path);
 
     let shared_config = aws_manager::load_config(Some(String::from("us-east-1")))

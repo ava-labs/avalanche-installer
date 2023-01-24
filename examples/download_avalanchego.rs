@@ -8,7 +8,7 @@ use avalanche_installer::avalanchego::{github, s3 as avalanchego_s3};
 use aws_manager::{self, s3};
 use tokio::time::{sleep, Duration};
 
-/// cargo run --example download
+/// cargo run --example download_avalanchego
 #[tokio::main]
 async fn main() -> io::Result<()> {
     // ref. https://github.com/env-logger-rs/env_logger/issues/47

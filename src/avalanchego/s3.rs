@@ -69,6 +69,7 @@ pub async fn download_avalanche_and_plugins(
             let f = File::open(&tmp_path)?;
             f.set_permissions(PermissionsExt::from_mode(0o777))?;
         }
+        log::info!("copying {tmp_path} to {target_avalanchego_bin_path}");
         fs::copy(&tmp_path, &target_avalanchego_bin_path)?;
         fs::remove_file(&tmp_path)?;
     } else {

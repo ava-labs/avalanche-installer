@@ -33,7 +33,7 @@ pub async fn download(
     } else {
         log::info!("fetching the latest git tags");
         let mut release_info = crate::github::ReleaseResponse::default();
-        for round in 0..20 {
+        for round in 0..10 {
             let info = match crate::github::fetch_latest_release("ava-labs", "subnet-evm").await {
                 Ok(v) => v,
                 Err(e) => {

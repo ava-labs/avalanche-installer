@@ -14,7 +14,8 @@ pub async fn download_latest(arch: Option<Arch>, os: Option<Os>) -> io::Result<S
     download(arch, os, None).await
 }
 
-pub const DEFAULT_TAG_NAME: &str = "v1.9.8";
+/// ref. <https://github.com/ava-labs/avalanchego/releases>
+pub const DEFAULT_TAG_NAME: &str = "v1.9.9";
 
 /// Downloads the official "avalanchego" binaries from the GitHub release page.
 /// Returns the path to the binary path.
@@ -24,7 +25,7 @@ pub const DEFAULT_TAG_NAME: &str = "v1.9.8";
 /// Leave "arch" and "os" empty to auto-detect from its local system.
 /// "arch" must be either "amd64" or "arm64".
 /// "os" must be either "macos", "linux", or "win".
-/// ref. https://github.com/ava-labs/avalanchego/releases
+/// ref. <https://github.com/ava-labs/avalanchego/releases>
 pub async fn download(
     arch: Option<Arch>,
     os: Option<Os>,
@@ -76,7 +77,7 @@ pub async fn download(
         }
     };
 
-    // ref. https://github.com/ava-labs/avalanchego/releases
+    // ref. <https://github.com/ava-labs/avalanchego/releases>
     log::info!(
         "detecting arch and platform for the release version tag {}",
         tag_name
@@ -95,7 +96,7 @@ pub async fn download(
     };
 
     // TODO: handle Apple arm64 when the official binary is available
-    // ref. https://github.com/ava-labs/avalanchego/releases
+    // ref. <https://github.com/ava-labs/avalanchego/releases>
     let (file_name, dir_decoder) = {
         if os.is_none() {
             if cfg!(target_os = "macos") {

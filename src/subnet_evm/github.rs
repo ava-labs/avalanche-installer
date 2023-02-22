@@ -18,16 +18,17 @@ pub async fn download_latest(
     download(arch, os, None, target_file_path).await
 }
 
-pub const DEFAULT_TAG_NAME: &str = "v0.4.8";
+/// ref. <https://github.com/ava-labs/subnet-evm/releases>
+pub const DEFAULT_TAG_NAME: &str = "v0.4.9";
 
-/// ref. https://github.com/ava-labs/subnet-evm/releases
+/// ref. <https://github.com/ava-labs/subnet-evm/releases>
 pub async fn download(
     arch: Option<Arch>,
     os: Option<Os>,
     release_tag: Option<String>,
     target_file_path: &str,
 ) -> io::Result<()> {
-    // e.g., "v0.4.8"
+    // e.g., "v0.4.9"
     let tag_name = if let Some(v) = release_tag {
         v
     } else {
@@ -73,7 +74,7 @@ pub async fn download(
         }
     };
 
-    // ref. https://github.com/ava-labs/subnet-evm/releases
+    // ref. <https://github.com/ava-labs/subnet-evm/releases>
     log::info!(
         "detecting arch and platform for the release version tag {}",
         tag_name
@@ -91,7 +92,7 @@ pub async fn download(
         }
     };
 
-    // ref. https://github.com/ava-labs/subnet-evm/releases
+    // ref. <https://github.com/ava-labs/subnet-evm/releases>
     let (file_name, dir_decoder) = {
         if os.is_none() {
             if cfg!(target_os = "macos") {

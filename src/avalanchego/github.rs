@@ -46,7 +46,7 @@ pub async fn download(
                         e,
                         round + 1
                     );
-                    sleep(Duration::from_secs((round + 1) * 5)).await;
+                    sleep(Duration::from_secs((round + 1) * 3)).await;
                     continue;
                 }
             };
@@ -57,7 +57,7 @@ pub async fn download(
             }
 
             log::warn!("release_info.tag_name is None -- retrying {}...", round + 1);
-            sleep(Duration::from_secs((round + 1) * 5)).await;
+            sleep(Duration::from_secs((round + 1) * 3)).await;
         }
 
         if release_info.tag_name.is_none() {

@@ -1,7 +1,6 @@
 use std::{
     env, fs,
     io::{self, Write},
-    sync::Arc,
 };
 
 use avalanche_installer::avalanchego::{github, s3 as avalanchego_s3};
@@ -33,11 +32,7 @@ async fn main() -> io::Result<()> {
     sleep(Duration::from_secs(2)).await;
     let avalanchego_s3_key = "sub-dir/avalanchego".to_string();
     s3_manager
-        .put_object(
-            Arc::new(avalanchego_path.clone()),
-            Arc::new(s3_bucket.clone()),
-            Arc::new(avalanchego_s3_key.clone()),
-        )
+        .put_object(&avalanchego_path, &s3_bucket, &avalanchego_s3_key)
         .await
         .unwrap();
 
@@ -47,11 +42,7 @@ async fn main() -> io::Result<()> {
     let upload_file_path = upload_file.path().to_str().unwrap().to_string();
     let plugin_s3_key = "sub-dir/plugin/aaa".to_string();
     s3_manager
-        .put_object(
-            Arc::new(upload_file_path.clone()),
-            Arc::new(s3_bucket.clone()),
-            Arc::new(plugin_s3_key.clone()),
-        )
+        .put_object(&upload_file_path, &s3_bucket, &plugin_s3_key)
         .await
         .unwrap();
 
@@ -60,7 +51,7 @@ async fn main() -> io::Result<()> {
     let target_plugin_dir = env::temp_dir().as_os_str().to_str().unwrap().to_string();
     avalanchego_s3::download_avalanche_and_plugins(
         true,
-        Arc::new(s3_manager.clone()),
+        &s3_manager,
         &s3_bucket,
         &avalanchego_s3_key,
         &target_avalanchego_bin_path,
@@ -73,10 +64,7 @@ async fn main() -> io::Result<()> {
     log::info!("removing {target_avalanchego_bin_path}");
     fs::remove_file(&target_avalanchego_bin_path)?;
 
-    s3_manager
-        .delete_objects(Arc::new(s3_bucket.clone()), None)
-        .await
-        .unwrap();
+    s3_manager.delete_objects(&s3_bucket, None).await.unwrap();
 
     sleep(Duration::from_secs(2)).await;
     s3_manager.delete_bucket(&s3_bucket).await.unwrap();

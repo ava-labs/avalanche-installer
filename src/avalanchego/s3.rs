@@ -3,7 +3,6 @@ use std::{
     io::{self, Error, ErrorKind},
     os::unix::fs::PermissionsExt,
     path::Path,
-    sync::Arc,
 };
 
 use aws_manager::{self, s3};
@@ -11,7 +10,7 @@ use tokio::time::{sleep, Duration};
 
 pub async fn download_avalanche_and_plugins(
     overwrite: bool,
-    s3_manager: Arc<s3::Manager>,
+    s3_manager: &s3::Manager,
     s3_bucket: &str,
     source_avalanchego_bin_s3_path: &str,
     target_avalanchego_bin_path: &str,
@@ -19,8 +18,6 @@ pub async fn download_avalanche_and_plugins(
     target_plugin_dir: &str,
 ) -> io::Result<()> {
     log::info!("downloading avalanchego and plugins in bucket {s3_bucket} (overwrite {overwrite})");
-    let s3_manager: &s3::Manager = s3_manager.as_ref();
-
     let mut need_download = !Path::new(target_avalanchego_bin_path).exists();
     if overwrite {
         need_download = true;
@@ -33,11 +30,7 @@ pub async fn download_avalanche_and_plugins(
             log::info!("[ROUND {round}] get_object for {source_avalanchego_bin_s3_path}");
 
             let res = s3_manager
-                .get_object(
-                    Arc::new(s3_bucket.to_owned()),
-                    Arc::new(source_avalanchego_bin_s3_path.to_owned()),
-                    Arc::new(tmp_path.clone()),
-                )
+                .get_object(s3_bucket, source_avalanchego_bin_s3_path, &tmp_path)
                 .await;
 
             if res.is_ok() {
@@ -81,10 +74,7 @@ pub async fn download_avalanche_and_plugins(
         log::info!("[ROUND {round}] list_objects for {source_plugin_dir_s3_prefix}");
 
         let res = s3_manager
-            .list_objects(
-                Arc::new(s3_bucket.to_owned()),
-                Some(Arc::new(source_plugin_dir_s3_prefix.to_owned())),
-            )
+            .list_objects(s3_bucket, Some(source_plugin_dir_s3_prefix))
             .await;
 
         if res.is_ok() {
@@ -151,13 +141,7 @@ pub async fn download_avalanche_and_plugins(
         for round in 0..20 {
             log::info!("[ROUND {round}] get_object for {s3_key}");
 
-            let res = s3_manager
-                .get_object(
-                    Arc::new(s3_bucket.to_owned()),
-                    Arc::new(s3_key.to_owned()),
-                    Arc::new(tmp_path.clone()),
-                )
-                .await;
+            let res = s3_manager.get_object(s3_bucket, &s3_key, &tmp_path).await;
 
             if res.is_ok() {
                 success = true;

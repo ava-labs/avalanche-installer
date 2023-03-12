@@ -55,8 +55,8 @@ async fn main() -> io::Result<()> {
         &s3_bucket,
         &avalanchego_s3_key,
         &target_avalanchego_bin_path,
-        "sub-dir/plugin",
-        &target_plugin_dir,
+        Some("sub-dir/plugin"),
+        Some(&target_plugin_dir),
     )
     .await
     .unwrap();

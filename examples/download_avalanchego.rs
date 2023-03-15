@@ -18,9 +18,12 @@ async fn main() -> io::Result<()> {
     let avalanchego_path = github::download_latest(None, None).await.unwrap();
     log::info!("avalanchego path: {}", avalanchego_path);
 
-    let shared_config = aws_manager::load_config(Some(String::from("us-east-1")))
-        .await
-        .unwrap();
+    let shared_config = aws_manager::load_config(
+        Some(String::from("us-east-1")),
+        Some(Duration::from_secs(30)),
+    )
+    .await
+    .unwrap();
     let s3_manager = s3::Manager::new(&shared_config);
     let s3_bucket = format!(
         "installer-{}",

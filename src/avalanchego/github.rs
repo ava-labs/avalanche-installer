@@ -31,7 +31,7 @@ pub async fn download(
     os: Option<Os>,
     release_tag: Option<String>,
 ) -> io::Result<String> {
-    // e.g., "v1.9.7"
+    // e.g., "v1.9.11"
     let tag_name = if let Some(v) = release_tag {
         v
     } else {

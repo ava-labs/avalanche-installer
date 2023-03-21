@@ -8,7 +8,7 @@ https://crates.io/crates/avalanche-installer
 Automates:
 
 ```bash
-VERSION=1.9.7
+VERSION=1.9.11
 rm -rf /tmp/avalanchego.tar.gz /tmp/avalanchego-v${VERSION}
 curl -L ${DOWNLOAD_URL}/v${VERSION}/avalanchego-linux-amd64-v${VERSION}.tar.gz -o /tmp/avalanchego.tar.gz
 tar xzvf /tmp/avalanchego.tar.gz -C /tmp

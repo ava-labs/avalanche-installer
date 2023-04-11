@@ -31,9 +31,15 @@ pub async fn download(
     os: Option<Os>,
     release_tag: Option<String>,
 ) -> io::Result<String> {
-    // e.g., "v1.9.11"
+    // e.g., "v1.9.16"
     let tag_name = if let Some(v) = release_tag {
-        v
+        // "https://github.com/ava-labs/avalanchego/releases" doesn't have "latest" tag
+        if v.eq("latest") {
+            log::warn!("falling back 'latest' to {DEFAULT_TAG_NAME}");
+            DEFAULT_TAG_NAME.to_owned()
+        } else {
+            v
+        }
     } else {
         log::info!("fetching the latest git tags");
         let mut release_info = crate::github::ReleaseResponse::default();

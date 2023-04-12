@@ -15,7 +15,7 @@ pub async fn download_latest(arch: Option<Arch>, os: Option<Os>) -> io::Result<S
 }
 
 /// ref. <https://github.com/ava-labs/avalanchego/releases>
-pub const DEFAULT_TAG_NAME: &str = "v1.9.16";
+pub const DEFAULT_TAG_NAME: &str = "v1.10.0";
 
 /// Downloads the official "avalanchego" binaries from the GitHub release page.
 /// Returns the path to the binary path.

@@ -19,7 +19,7 @@ pub async fn download_latest(
 }
 
 /// ref. <https://github.com/ava-labs/subnet-evm/releases>
-pub const DEFAULT_TAG_NAME: &str = "v0.4.12";
+pub const DEFAULT_TAG_NAME: &str = "v0.5.0";
 
 /// ref. <https://github.com/ava-labs/subnet-evm/releases>
 pub async fn download(
@@ -28,9 +28,15 @@ pub async fn download(
     release_tag: Option<String>,
     target_file_path: &str,
 ) -> io::Result<()> {
-    // e.g., "v0.4.9"
+    // e.g., "v0.5.0"
     let tag_name = if let Some(v) = release_tag {
-        v
+        // "https://github.com/ava-labs/subnet-evm/releases" doesn't have "latest" tag
+        if v.eq("latest") {
+            log::warn!("falling back 'latest' to {DEFAULT_TAG_NAME}");
+            DEFAULT_TAG_NAME.to_owned()
+        } else {
+            v
+        }
     } else {
         log::info!("fetching the latest git tags");
         let mut release_info = crate::github::ReleaseResponse::default();

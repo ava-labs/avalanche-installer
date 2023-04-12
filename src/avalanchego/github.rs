@@ -31,7 +31,7 @@ pub async fn download(
     os: Option<Os>,
     release_tag: Option<String>,
 ) -> io::Result<String> {
-    // e.g., "v1.9.16"
+    // e.g., "v1.10.0"
     let tag_name = if let Some(v) = release_tag {
         // "https://github.com/ava-labs/avalanchego/releases" doesn't have "latest" tag
         if v.eq("latest") {

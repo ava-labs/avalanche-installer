@@ -39,7 +39,7 @@ pub async fn download_avalanche_and_plugins(
             }
 
             let err = res.err().unwrap();
-            if err.is_retryable() {
+            if err.retryable() {
                 log::warn!("get_object retriable error: {}", err);
                 sleep(Duration::from_secs((round + 1) * 5)).await;
                 continue;
@@ -86,7 +86,7 @@ pub async fn download_avalanche_and_plugins(
             }
 
             let err = res.err().unwrap();
-            if err.is_retryable() {
+            if err.retryable() {
                 log::warn!("list_objects retriable error: {}", err);
                 sleep(Duration::from_secs((round + 1) * 5)).await;
                 continue;
@@ -151,7 +151,7 @@ pub async fn download_avalanche_and_plugins(
                 }
 
                 let err = res.err().unwrap();
-                if err.is_retryable() {
+                if err.retryable() {
                     log::warn!("get_object retriable error: {}", err);
                     sleep(Duration::from_secs((round + 1) * 5)).await;
                     continue;

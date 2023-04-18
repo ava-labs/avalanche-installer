@@ -1,5 +1,4 @@
 pub mod github;
-pub mod s3;
 
 use std::path::Path;
 

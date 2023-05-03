@@ -19,7 +19,7 @@ pub async fn download_latest(
 }
 
 /// ref. <https://github.com/ava-labs/subnet-evm/releases>
-pub const DEFAULT_TAG_NAME: &str = "v0.5.0";
+pub const DEFAULT_TAG_NAME: &str = "v0.5.1";
 
 /// ref. <https://github.com/ava-labs/subnet-evm/releases>
 pub async fn download(

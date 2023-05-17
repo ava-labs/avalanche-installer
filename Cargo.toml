@@ -1,6 +1,6 @@
 [package]
 name = "avalanche-installer"
-version = "0.0.73" # https://crates.io/crates/avalanche-installer
+version = "0.0.74" # https://crates.io/crates/avalanche-installer
 edition = "2021"
 rust-version = "1.69"
 publish = true
@@ -10,10 +10,10 @@ readme = "README.md"
 license = "Apache-2.0"
 
 [dependencies]
-compress-manager = "0.0.9"
+compress-manager = "0.0.10"
 log = "0.4.17"
 random-manager = "0.0.5"
-reqwest = "0.11.17"
+reqwest = "0.11.18"
 serde = { version = "1.0.163", features = ["derive"] }
 serde_json = "1.0.96" # https://github.com/serde-rs/json
 tokio = { version = "1.28.1", features = ["full"] } # https://github.com/tokio-rs/tokio/releases

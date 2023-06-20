@@ -1,8 +1,8 @@
 [package]
 name = "avalanche-installer"
-version = "0.0.76" # https://crates.io/crates/avalanche-installer
+version = "0.0.77" # https://crates.io/crates/avalanche-installer
 edition = "2021"
-rust-version = "1.69"
+rust-version = "1.70"
 publish = true
 description = "Avalanche installer"
 repository = "https://github.com/ava-labs/avalanche-installer"

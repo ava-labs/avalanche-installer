@@ -9,23 +9,24 @@ on:
       - "*"
   pull_request:
 
-permissions:
-  contents: write
+permissions: {}
 
 jobs:
   static_analysis:
+    permissions:
+      contents: read
     name: Static analysis (lint)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
-      - name: Install Rust
-        uses: actions-rs/toolchain@16499b5e05bf2e26879000db0c1d13f7e13fa3af # v1
         with:
-          toolchain: nightly
-          profile: minimal
-          components: rustfmt, clippy
-          override: true
+          persist-credentials: false
+      - name: Install Rust
+        shell: bash
+        run: |
+          rustup toolchain install nightly --profile minimal --component rustfmt --component clippy
+          rustup override set nightly
       - name: Check Rust version
         run: rustc --version
       - uses: Swatinem/rust-cache@81d053bdb0871dcd3f10763c8cc60d0adc41762b # v1
@@ -36,18 +37,20 @@ jobs:
         run: scripts/tests.lint.sh
 
   check_cargo_unused:
+    permissions:
+      contents: read
     name: Check Cargo unused
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
-      - name: Install Rust
-        uses: actions-rs/toolchain@16499b5e05bf2e26879000db0c1d13f7e13fa3af # v1
         with:
-          toolchain: nightly
-          profile: minimal
-          components: rustfmt, clippy
-          override: true
+          persist-credentials: false
+      - name: Install Rust
+        shell: bash
+        run: |
+          rustup toolchain install nightly --profile minimal --component rustfmt --component clippy
+          rustup override set nightly
       - name: Check Rust version
         run: rustc --version
       - uses: Swatinem/rust-cache@81d053bdb0871dcd3f10763c8cc60d0adc41762b # v1
@@ -58,17 +61,20 @@ jobs:
         run: scripts/tests.unused.sh
 
   unit_tests:
+    permissions:
+      contents: read
     name: Unit tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
-      - name: Install Rust
-        uses: actions-rs/toolchain@16499b5e05bf2e26879000db0c1d13f7e13fa3af # v1
         with:
-          toolchain: stable
-          profile: minimal
-          override: true
+          persist-credentials: false
+      - name: Install Rust
+        shell: bash
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup override set stable
       - name: Check Rust version
         run: rustc --version
       - uses: Swatinem/rust-cache@81d053bdb0871dcd3f10763c8cc60d0adc41762b # v1
